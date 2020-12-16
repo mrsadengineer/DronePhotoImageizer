@@ -50,7 +50,7 @@ ML.NET
 The source code is being converted from a previous beta project. The version number is to be determined.     
 
 ## Sources
-
+https://www.markwithall.com/programming/2013/03/01/worlds-simplest-csharp-wpf-mvvm-example.html  
 
 ## Setup and Launch
 
