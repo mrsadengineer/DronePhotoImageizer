@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DronePhotoImageizer.WpfClient
+namespace DronePhotoImageizer.WpfClient.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for ClassifyImageBySixUCView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ClassifyImageBySixUCView : UserControl
     {
-        public MainWindow()
+        public ClassifyImageBySixUCView()
         {
             InitializeComponent();
         }

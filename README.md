@@ -1,4 +1,4 @@
-# Drone PhotoImageizer
+# Drone Photo Imageizer
 
 ## Introduction 
 The project aims to help drone user to manage and analyze images. Drones produce lots of images.
@@ -43,7 +43,7 @@ to apply trained models for image classicaion, to stitch together photo for an a
 Project is created with:  
 
 WPF Client (.NET 5)  
-ML.NET  
+ML.NET  (1.5.3)
 
 
 ## Project status
