@@ -1,7 +1,7 @@
 ﻿<UserControl x:Class="DronePhotoImageizer.WpfClient.Views.ClassifyImageBySixUCView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ViewModels="clr-namespace:DronePhotoImageizer.WpfClient.ViewModels"
              xmlns:local="clr-namespace:DronePhotoImageizer.WpfClient.Views"
@@ -14,58 +14,48 @@
     </UserControl.DataContext>
     <Grid Background="#FFE5E5E5"
           Margin="0,0,0,10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="22*" />
-            <ColumnDefinition Width="66*" />
-            <ColumnDefinition Width="665*" />
-        </Grid.ColumnDefinitions>
+
         <GroupBox Header="Input Direcotry Numbered Images"
                   HorizontalAlignment="Left"
                   Height="55"
                   Margin="0,10,0,0"
                   VerticalAlignment="Top"
-                  Width="549"
-                  Grid.ColumnSpan="2"
-                  Grid.Column="1">
+                  Width="560">
             <TextBox  x:Name="inputdir_classify_txtbx"
                       HorizontalAlignment="Left"
-                      Height="23"
-                      Margin="10,0,-2,0"
+                      Height="20"
+                      Margin="10,0,0,0"
                       TextWrapping="Wrap"
                       VerticalAlignment="Top"
-                      Width="529"
+                      Width="533"
                       Text="{Binding InputDirText}" />
         </GroupBox>
         <GroupBox HorizontalAlignment="Left"
                   Height="56"
                   Margin="0,70,0,0"
                   VerticalAlignment="Top"
-                  Width="549"
-                  Grid.Column="1"
-                  Header="Ouput Directory for Copies"
-                  Grid.ColumnSpan="2">
+                  Width="560"
+                  Header="Ouput Directory for Copies">
             <TextBox x:Name="outputdir_classify_txtbx"
                      Height="23"
                      TextWrapping="Wrap"
                      VerticalAlignment="Top"
-                     Margin="10,0,-2,0"
+                     Margin="10,0,9,0"
                      Text="{Binding OutputDirText}" />
         </GroupBox>
-        <Button Content="Classify and Copy"
+        <Button Content="Classify and Copy Into New Classification Output Directory"
                 HorizontalAlignment="Left"
-                Margin="418,131,0,0"
+                Margin="350,131,0,0"
                 VerticalAlignment="Top"
-                Width="141"
-                Grid.Column="2"
-                Command="{Binding ClassifyAndCopy}" />
+                Width="329"
+                Command="{Binding ClassifyAndCopy}"
+                Height="22" />
         <GroupBox Header="Description"
                   HorizontalAlignment="Left"
                   Height="77"
-                  Margin="0,132,0,0"
-                  VerticalAlignment="Top"
-                  Width="165"
-                  Grid.Column="1"
-                  Grid.ColumnSpan="2">
+                  Margin="4,0,0,0"
+                  VerticalAlignment="Center"
+                  Width="164">
             <TextBlock HorizontalAlignment="Left"
                        TextWrapping="Wrap"
                        Text="Classify images in one of six classes"
@@ -74,34 +64,32 @@
                        Height="63" />
         </GroupBox>
         <Button Content="Input Directory"
-                Grid.Column="2"
                 HorizontalAlignment="Left"
-                Margin="484,24,0,0"
+                Margin="577,24,0,0"
                 VerticalAlignment="Top"
-                Width="75"
-                Command="{Binding SetInputDirectory}" />
+                Width="102"
+                Command="{Binding SetInputDirectory}"
+                Height="28" />
         <Button Content="Output Directory"
-                Grid.Column="2"
                 HorizontalAlignment="Left"
-                Margin="484,80,0,0"
+                Margin="577,85,0,0"
                 VerticalAlignment="Top"
-                Width="75"
-                Command="{Binding SetOutputDirectory}" />
+                Width="102"
+                Command="{Binding SetOutputDirectory}"
+                Height="29" />
 
 
 
-        <GroupBox Grid.Column="2"
-                  Header="Status Output"
+        <GroupBox Header="Status Output"
                   HorizontalAlignment="Left"
-                  Height="282"
-                  Margin="117,156,0,0"
+                  Height="272"
+                  Margin="180,158,0,0"
                   VerticalAlignment="Top"
-                  Width="442">
-            <ListView HorizontalAlignment="Left"
+                  Width="499">
+            <ListView HorizontalAlignment="Center"
                       Height="241"
-                      Margin="10,10,-2,0"
                       VerticalAlignment="Top"
-                      Width="422"
+                      Width="466"
                       ItemsSource="{Binding PredictionResults}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
@@ -118,14 +106,12 @@
                 </ListView.ItemTemplate>
             </ListView>
         </GroupBox>
-        <GroupBox Grid.Column="1"
-                  Header="Classifications"
+        <GroupBox Header="Classifications"
                   HorizontalAlignment="Left"
-                  Height="171"
-                  Margin="7,247,0,0"
+                  Height="139"
+                  Margin="7,279,0,0"
                   VerticalAlignment="Top"
-                  Width="158"
-                  Grid.ColumnSpan="2">
+                  Width="158">
             <StackPanel HorizontalAlignment="Left"
                         Height="106"
                         VerticalAlignment="Top"

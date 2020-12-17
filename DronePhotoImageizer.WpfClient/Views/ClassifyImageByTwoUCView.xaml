@@ -6,129 +6,127 @@
              xmlns:ViewModels="clr-namespace:DronePhotoImageizer.WpfClient.ViewModels"
              xmlns:local="clr-namespace:DronePhotoImageizer.WpfClient.Views"
              mc:Ignorable="d"
-             d:DesignHeight="450"
-             Width="701">
+             d:DesignHeight="462"
+             Width="701"
+             Height="500">
     <UserControl.DataContext>
         <ViewModels:ClassifyImageByTwoViewModel />
 
     </UserControl.DataContext>
     <Grid Background="#FFE5E5E5"
           Margin="0,0,0,10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="22*" />
-            <ColumnDefinition Width="66*" />
-            <ColumnDefinition Width="665*" />
-        </Grid.ColumnDefinitions>
-        <GroupBox Header="Input Direcotry Numbered Images"
-                  HorizontalAlignment="Left"
-                  Height="55"
-                  Margin="0,10,0,0"
-                  VerticalAlignment="Top"
-                  Width="549"
-                  Grid.ColumnSpan="2"
-                  Grid.Column="1">
-            <TextBox  x:Name="inputdir_classify_txtbx"
-                      HorizontalAlignment="Left"
-                      Height="23"
-                      Margin="10,0,-2,0"
-                      TextWrapping="Wrap"
-                      VerticalAlignment="Top"
-                      Width="529"
-                      Text="{Binding InputDirText}" />
-        </GroupBox>
-        <GroupBox HorizontalAlignment="Left"
-                  Height="56"
-                  Margin="0,70,0,0"
-                  VerticalAlignment="Top"
-                  Width="549"
-                  Grid.Column="1"
-                  Header="Ouput Directory for Copies"
-                  Grid.ColumnSpan="2">
-            <TextBox x:Name="outputdir_classify_txtbx"
-                     Height="23"
-                     TextWrapping="Wrap"
-                     VerticalAlignment="Top"
-                     Margin="10,0,-2,0"
-                     Text="{Binding OutputDirText}" />
-        </GroupBox>
-        <Button Content="Classify and Copy"
-                HorizontalAlignment="Left"
-                Margin="418,131,0,0"
-                VerticalAlignment="Top"
-                Width="141"
-                Grid.Column="2"
-                Command="{Binding ClassifyAndCopy}" />
+        <StackPanel HorizontalAlignment="Left"
+                    Orientation="Vertical"
+                    VerticalAlignment="Top">
+
+            <GroupBox Header="Image Binary Classification Model Location"
+                      Height="47"
+                      Width="690">
+                <StackPanel HorizontalAlignment="Left"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Top">
+                    <TextBox  x:Name="inputModel_classify_txtbx1"
+                              Height="23"
+                              TextWrapping="Wrap"
+                              Width="563"
+                              Text="{Binding ModelInputFileText}" />
+                    <Button Content="Input Model"
+                            Width="108"
+                            Command="{Binding SetTrainedInputModelFile}"
+                            Height="23" />
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="Input Directory - (Renamed and Sorted Numbered Image Files)"
+                      Height="47"
+                      Width="690">
+                <StackPanel HorizontalAlignment="Left"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Top">
+                    <TextBox  x:Name="inputdir_classify_txtbx"
+                              Height="23"
+                              TextWrapping="Wrap"
+                              Width="563"
+                              Text="{Binding InputDirText}" />
+                    <Button Content="Input Directory"
+                            Width="108"
+                            Command="{Binding SetInputDirectory}"
+                            Height="23" />
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Height="47"
+                      Width="690"
+                      Header="Output Target Root Directory - (New Location for Classifed Copies)">
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Top">
+                    <TextBox x:Name="outputdir_classify_txtbx"
+                             Height="23"
+                             TextWrapping="Wrap"
+                             Text="{Binding OutputDirText}"
+                             Width="563" />
+                    <Button Content="Output Directory"
+                            Width="108"
+                            Command="{Binding SetOutputDirectory}"
+                            Height="23" />
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
         <GroupBox Header="Description"
                   HorizontalAlignment="Left"
-                  Height="77"
-                  Margin="0,132,0,0"
+                  Height="76"
+                  Margin="10,182,0,0"
                   VerticalAlignment="Top"
-                  Width="165"
-                  Grid.Column="1"
-                  Grid.ColumnSpan="2">
+                  Width="187">
             <TextBlock HorizontalAlignment="Left"
                        TextWrapping="Wrap"
                        Text="Classify images in to inventory and infrastructure directorys"
-                       VerticalAlignment="Top"
-                       Width="145"
-                       Height="63" />
+                       VerticalAlignment="Center"
+                       Width="177"
+                       Height="42" />
         </GroupBox>
-        <Button Content="Input Directory"
-                Grid.Column="2"
-                HorizontalAlignment="Left"
-                Margin="484,24,0,0"
-                VerticalAlignment="Top"
-                Width="75"
-                Command="{Binding SetInputDirectory}" />
-        <Button Content="Output Directory"
-                Grid.Column="2"
-                HorizontalAlignment="Left"
-                Margin="484,80,0,0"
-                VerticalAlignment="Top"
-                Width="75"
-                Command="{Binding SetOutputDirectory}" />
+        <Button Content="|&gt; 2 Class Classification and Duplicate"
+                Command="{Binding ClassifyAndCopy}"
+                Margin="446,153,25,0"
+                Height="25"
+                VerticalAlignment="Top" />
 
 
 
-        <GroupBox Grid.Column="2"
-                  Header="Status Output"
+        <GroupBox Header="Status Output"
                   HorizontalAlignment="Left"
-                  Height="282"
-                  Margin="117,156,0,0"
+                  Height="260"
+                  Margin="202,182,0,0"
                   VerticalAlignment="Top"
-                  Width="442">
+                  Width="489">
             <ListView HorizontalAlignment="Left"
-                      Height="241"
-                      Margin="10,10,-2,0"
+                      Height="231"
+                      Margin="10,0,0,0"
                       VerticalAlignment="Top"
-                      Width="422"
+                      Width="459"
                       ItemsSource="{Binding PredictionResults}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{Binding ImageOriginalPath}"
                                    Height="100"
-                                   Width="100"></Image>
+                                   Width="100" />
                             <StackPanel>
-                                <TextBlock Text="{Binding ModelOutputPrediction }"></TextBlock>
-                                <TextBlock Text="{Binding ModelOutputscore }"></TextBlock>
+                                <TextBlock Text="{Binding ModelOutputPrediction}" />
+                                <TextBlock Text="{Binding ModelOutputscore}" />
                             </StackPanel>
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
         </GroupBox>
-        <GroupBox Grid.Column="1"
-                  Header="Classifications"
+        <GroupBox Header="Classifications"
                   HorizontalAlignment="Left"
-                  Height="171"
-                  Margin="7,247,0,0"
+                  Height="64"
+                  Margin="10,263,0,0"
                   VerticalAlignment="Top"
-                  Width="158"
-                  Grid.ColumnSpan="2">
+                  Width="187">
             <StackPanel HorizontalAlignment="Left"
-                        Height="90"
-                        Margin="0,0,-2,-13"
+                        Height="43"
                         VerticalAlignment="Top"
                         Width="90">
                 <TextBlock TextWrapping="Wrap"
@@ -137,6 +135,12 @@
                            Text="-infrastructure" />
             </StackPanel>
         </GroupBox>
+        <Label Content="Image Binary Classification - Version 0.3.0"
+               HorizontalAlignment="Left"
+               Margin="10,146,0,0"
+               VerticalAlignment="Top"
+               FontWeight="Bold"
+               FontSize="18" />
 
 
     </Grid>

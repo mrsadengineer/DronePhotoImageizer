@@ -14,12 +14,6 @@
 
     </UserControl.DataContext>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="172*"/>
-            <ColumnDefinition Width="29*"/>
-            <ColumnDefinition Width="20*"/>
-            <ColumnDefinition Width="532*"/>
-        </Grid.ColumnDefinitions>
         <GroupBox Header="Actions" HorizontalAlignment="Left" Height="160" Margin="10,10,0,0" VerticalAlignment="Top" Width="121">
             <StackPanel>
                 <Button x:Name="inputDirectory_btn"

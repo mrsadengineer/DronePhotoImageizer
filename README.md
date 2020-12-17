@@ -11,6 +11,7 @@ to apply trained models for image classicaion, to stitch together photo for an a
 
 
 #### todo
+create generic model from data on the web  
 
 ## learning objectives
 * FullStack C# (.NET 5)
@@ -19,6 +20,7 @@ to apply trained models for image classicaion, to stitch together photo for an a
 * C#
 * Batch processing
 * EMGU.CV for bindings to OpenCV
+* Select File/Directory dialogs in WPF
 
 ### functional specs
 * Batch ordering, sorting, renaming, and resizing images
@@ -50,7 +52,9 @@ ML.NET  (1.5.3)
 The source code is being converted from a previous beta project. The version number is to be determined.     
 
 ## Sources
-https://www.markwithall.com/programming/2013/03/01/worlds-simplest-csharp-wpf-mvvm-example.html  
+https://www.markwithall.com/programming/2013/03/01/worlds-simplest-csharp-wpf-mvvm-example.html   
+https://stackoverflow.com/questions/5483565/how-to-use-wpf-background-worker  
+https://stackoverflow.com/questions/10315188/open-file-dialog-and-select-a-file-using-wpf-controls-and-c-sharp  
 
 ## Setup and Launch
 

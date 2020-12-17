@@ -14,7 +14,7 @@ using System.Windows.Input;
 
 namespace DronePhotoImageizer.WpfClient.ViewModels
 {
-  public  class ClassifyImageBySixViewModel : ObservableObject
+    public class ClassifyImageBySixViewModel : ObservableObject
     {
 
 
@@ -22,24 +22,38 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
         private string _inputDirText;
         private string _outputDirText;
 
-        private int _imageClassificationCount;
+        private int _imageClassificationCount = 0;
         private string[] filesToProcess;
         private readonly BackgroundWorker worker = new BackgroundWorker();
         private ObservableCollection<CustomTwoClassificationImagePredictionResults> _predictedResults;
 
+        //private ReadOnlyDictionary< labelPathDictionary
 
 
-
-
-
-        public ClassifyImageBySixViewModel()
+        public ClassifyImageBySixViewModel()//constructor
         {
-            _imageClassificationCount = 0;
-            PredictionResults = new ObservableCollection<CustomTwoClassificationImagePredictionResults>();
             worker.DoWork += startClassifying;
             worker.RunWorkerCompleted += startClassifyingCompleted;
 
         }
+
+        #region MVVM Properties and Commands
+
+        public ICommand ClassifyAndCopy
+        {
+            get { return new DelegateCommand(GetImageFilesAndBeginWorker); }
+        }
+
+        public ICommand SetInputDirectory
+        {
+            get { return new DelegateCommand(SetInputDirectoryMethod); } //win32 directory select dialog
+        }
+
+        public ICommand SetOutputDirectory
+        {
+            get { return new DelegateCommand(SetOutputDirectoryMethod); } //win32 directory select dialog
+        }
+
         public ObservableCollection<CustomTwoClassificationImagePredictionResults> PredictionResults
 
         {
@@ -70,6 +84,8 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
                 RaisePropertyChangedEvent("OutputDirText");
             }
         }
+        #endregion
+
         #region commons file/directory win32 interaction
 
         private void SetInputDirectoryMethod()
@@ -109,11 +125,6 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
 
             dialog.InitialDirectory = OutputDirText; // Use current value for initial dir
 
-
-
-
-
-
             dialog.Title = "Select a Directory"; // instead of default "Save As"
             dialog.Filter = "Directory|*.this.directory"; // Prevents displaying files
             dialog.FileName = "select"; // Filename will then be "select.this.directory"
@@ -137,24 +148,6 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
         }
 
         #endregion
-        #region commands
-
-        public ICommand ClassifyAndCopy
-        {
-            get { return new DelegateCommand(GetImageFilesAndBeginWorker); }
-        }
-
-        public ICommand SetInputDirectory
-        {
-            get { return new DelegateCommand(SetInputDirectoryMethod); }
-        }
-
-        public ICommand SetOutputDirectory
-        {
-            get { return new DelegateCommand(SetOutputDirectoryMethod); }
-        }
-
-        #endregion
 
 
 
@@ -169,47 +162,47 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
             Console.WriteLine(targetDirectoryPath);
 
 
+            // set up output paths for all classes. 
 
-            /////////// inventory
-            var inventoryDir = System.IO.Path.Combine(targetDirectoryPath, "inventory");
+            var inventoryDir = System.IO.Path.Combine(targetDirectoryPath, "inventory");            /////////// inventory
 
             if (!System.IO.Directory.Exists(inventoryDir))
             {
                 System.IO.Directory.CreateDirectory(inventoryDir);
             }
-            /////////////////infrasturcture
-          
-            var infrastructureDir = System.IO.Path.Combine(targetDirectoryPath, "infrastructure");
+
+
+            var infrastructureDir = System.IO.Path.Combine(targetDirectoryPath, "infrastructure");            /////////////////infrasturcture
             Console.WriteLine(infrastructureDir);
-      if (!System.IO.Directory.Exists(infrastructureDir))
+            if (!System.IO.Directory.Exists(infrastructureDir))
             {
                 System.IO.Directory.CreateDirectory(infrastructureDir);
             }
 
-            /////////field
-            var fieldDir = System.IO.Path.Combine(targetDirectoryPath, "field");
+
+            var fieldDir = System.IO.Path.Combine(targetDirectoryPath, "field");            /////////field
             Console.WriteLine(fieldDir);
             if (!System.IO.Directory.Exists(fieldDir))
             {
                 System.IO.Directory.CreateDirectory(fieldDir);
             }
 
-            ///////////vehicles
-            var vehiclesDir = System.IO.Path.Combine(targetDirectoryPath, "vehicles");
+
+            var vehiclesDir = System.IO.Path.Combine(targetDirectoryPath, "vehicles");            ///////////vehicles
             Console.WriteLine(vehiclesDir);
             if (!System.IO.Directory.Exists(vehiclesDir))
             {
                 System.IO.Directory.CreateDirectory(vehiclesDir);
             }
-            //////////road
-            var roadDir = System.IO.Path.Combine(targetDirectoryPath, "road");
+
+            var roadDir = System.IO.Path.Combine(targetDirectoryPath, "road");            //////////road
             Console.WriteLine(roadDir);
             if (!System.IO.Directory.Exists(roadDir))
             {
                 System.IO.Directory.CreateDirectory(roadDir);
             }
-            ///////////water
-            var waterDir = System.IO.Path.Combine(targetDirectoryPath, "water");
+
+            var waterDir = System.IO.Path.Combine(targetDirectoryPath, "water");            ///////////water
             Console.WriteLine(waterDir);
             if (!System.IO.Directory.Exists(waterDir))
             {

@@ -11,7 +11,7 @@ using System.Windows.Input;
 
 using DronePhotoImageizer.WpfClient.MVVMFramework;
 using DronePhotoImageizer.WpfClient.Models;
-
+using Microsoft.ML;
 
 namespace DronePhotoImageizer.WpfClient.ViewModels
 {
@@ -19,24 +19,43 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
     {
 
 
-        private string targetDirectoryPath;
+        private string _targetOutputDirectoryPath;
+
         private string _inputDirText;
         private string _outputDirText;
+        private string _modelInputFileText;
 
-        private int _imageClassificationCount;
-        private string[] filesToProcess;
+        private int _imageClassificationCount = 0;
+        private string[] _filesToProcess;
         private readonly BackgroundWorker worker = new BackgroundWorker();
+
+
+
         private ObservableCollection<CustomTwoClassificationImagePredictionResults> _predictedResults;
 
         public ClassifyImageByTwoViewModel()
         {
-            _imageClassificationCount = 0;
-            PredictionResults = new ObservableCollection<CustomTwoClassificationImagePredictionResults>();
-            worker.DoWork += startClassifying;
-            worker.RunWorkerCompleted += startClassifyingCompleted;
-
+            worker.DoWork += ImageBinaryClassificationAndDuplicateWorker;
+            worker.RunWorkerCompleted += workerCompleted;
         }
 
+        private SynchronizationContext uiContext;
+        private void startGetImageFileAndClassifcationWork()
+        {
+            if (_imageClassificationCount == 0)
+            {
+                Console.WriteLine("Image classification count is at 0");
+            }
+            else
+            {
+                Console.WriteLine("Image classification count is more than zero");
+            }
+            //  synchronization context in the ui thread.
+            uiContext = SynchronizationContext.Current;
+
+            worker.RunWorkerAsync();
+
+        }
 
 
 
@@ -70,7 +89,19 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
                 RaisePropertyChangedEvent("OutputDirText");
             }
         }
-        #region commons
+        public string ModelInputFileText
+        {
+            get { return _modelInputFileText; }
+            set
+            {
+                _modelInputFileText = value;
+                RaisePropertyChangedEvent("ModelInputFileText");
+            }
+        }
+
+
+
+        #region MVVM Commands and Properties
 
         private void SetInputDirectoryMethod()
         {
@@ -130,18 +161,43 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
                 }
                 // Our final value is in path
                 OutputDirText = path;
-                targetDirectoryPath = OutputDirText;
+
 
 
             }
         }
 
-        #endregion
-        #region commands
+        private void SetTrainedInputModelFileMethod()
+        {
+            // Create a "Save As" dialog for selecting a directory (HACK)
+            var dialog = new Microsoft.Win32.OpenFileDialog();
+            //    dialog.InitialDirectory = inputdir_classify_txtbx.Text; // Use current value for initial dir
+            //dialog.InitialDirectory = InputDirText; // Use current value for initial dir
+            dialog.InitialDirectory = Environment.CurrentDirectory;
+            //  sourceDirectory = inputdir_classify_txtbx.Text;
+            //   sourceDirectory = InputDirText;
+
+
+            dialog.Title = "Select a Trained Model"; // instead of default "Save As"
+                                                     // dialog.Filter = "Directory|*.this.directory"; // Prevents displaying files
+                                                     // dialog.FileName = "select"; // Filename will then be "select.this.directory"
+
+            // Set filter for file extension and default file extension 
+            dialog.DefaultExt = ".zip";
+            dialog.Filter = "ZIP File (*.zip)|*.zip";//"JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
+
+
+
+            if (dialog.ShowDialog() == true)
+            {
+                string path = dialog.FileName;
+                ModelInputFileText = path;
+            }
+        }
 
         public ICommand ClassifyAndCopy
         {
-            get { return new DelegateCommand(GetImageFilesAndBeginWorker); }
+            get { return new DelegateCommand(startGetImageFileAndClassifcationWork); }
         }
 
         public ICommand SetInputDirectory
@@ -153,69 +209,90 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
         {
             get { return new DelegateCommand(SetOutputDirectoryMethod); }
         }
+        public ICommand SetTrainedInputModelFile
+        {
+            get { return new DelegateCommand(SetTrainedInputModelFileMethod); }
+        }
 
         #endregion
 
-        
 
         #region predictions
 
 
-        private void startClassifying(object sender, DoWorkEventArgs e)
+        private void ImageBinaryClassificationAndDuplicateWorker(object sender, DoWorkEventArgs e)
         {
+            //should probably check for inputdirecttext is validated
+            _filesToProcess = Directory.GetFiles(InputDirText);
+            //I need property and feild for data binding of the text box for model location
+            //modelFilePath = 
+            _predictedResults = new ObservableCollection<CustomTwoClassificationImagePredictionResults>();
+            _targetOutputDirectoryPath = OutputDirText;
 
-            PredictionResults = new ObservableCollection<CustomTwoClassificationImagePredictionResults>();
+
+            //create output directories
             Console.WriteLine("-----------------------------------");
-            Console.WriteLine(targetDirectoryPath);
-
-
-
-
-            var inventoryDir = System.IO.Path.Combine(targetDirectoryPath, "inventory");
+            Console.WriteLine(_targetOutputDirectoryPath);
+            var inventoryDir = System.IO.Path.Combine(_targetOutputDirectoryPath, "inventory");
             Console.WriteLine(inventoryDir);
-
-
             Console.WriteLine(inventoryDir);
-            var infrastructureDir = System.IO.Path.Combine(targetDirectoryPath, "infrastructure");
+            var infrastructureDir = System.IO.Path.Combine(_targetOutputDirectoryPath, "infrastructure");
             Console.WriteLine(infrastructureDir);
-
-
-
             if (!System.IO.Directory.Exists(inventoryDir))
             {
                 System.IO.Directory.CreateDirectory(inventoryDir);
             }
-
-
             if (!System.IO.Directory.Exists(infrastructureDir))
             {
                 System.IO.Directory.CreateDirectory(infrastructureDir);
             }
 
 
-            foreach (var item in filesToProcess)
+
+
+            MLContext mlContext = new MLContext();
+            // ModelOutput mop = ConsumeModel.Predict(mip, ConsumeModel.ClassicationModelEnum.classtwo);
+
+            string modelPath = _modelInputFileText;
+
+            //// Load model & create prediction engine
+            ITransformer mlModel = mlContext.Model.Load(modelPath, out var modelInputSchema);
+
+            foreach (var item in _filesToProcess)
             {
+                Console.WriteLine(_imageClassificationCount.ToString());
                 _imageClassificationCount++;
                 Console.WriteLine(_imageClassificationCount); //parse to model input
                 ModelInput mip = new ModelInput();
                 mip.Label = "none";
                 mip.ImageSource = item;
-                ModelOutput mop = ConsumeModel.Predict(mip, ConsumeModel.ClassicationModelEnum.classtwo);
+
+                var predEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(mlModel);
+
+                Console.WriteLine($"number of columns is ======= {modelInputSchema.Count.ToString()}");
+                foreach (var inputItem in modelInputSchema)
+                {
+                    Console.WriteLine($"name of column is ========={inputItem.Name}");
+                }
+
+                // Console.WriteLine($"count is ======= {modelInputSchema.}");
+
+                // Use model to make prediction on input data
+                ModelOutput result = predEngine.Predict(mip);
 
 
 
 
-
-                string toprintDebugConsole = $"prediction class: {mop.Prediction}|| score: {mop.Score.FirstOrDefault()}";
+                string toprintDebugConsole = $"prediction class: {result.Prediction}|| score: {result.Score.FirstOrDefault()}";
 
                 Console.WriteLine(toprintDebugConsole);
-                Console.WriteLine(mop.Prediction.ToString());
-                Console.WriteLine(mop.Score.FirstOrDefault());
+                Console.WriteLine(result.Prediction.ToString());
+                Console.WriteLine(result.Score.FirstOrDefault());
                 Console.WriteLine("##########################");
                 Console.WriteLine(item);
                 var filename = System.IO.Path.GetFileName(item);
                 Console.WriteLine(filename);
-                string disclass = System.IO.Path.Combine(targetDirectoryPath, mop.Prediction);
+                string disclass = System.IO.Path.Combine(_targetOutputDirectoryPath, result.Prediction);
                 Console.WriteLine(disclass);
                 var destfile = System.IO.Path.Combine(disclass, filename);
                 Console.WriteLine(destfile);
@@ -226,8 +303,8 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
                 newPredictionToUpdateOutputStatus.PredictionId = _imageClassificationCount.ToString();
                 newPredictionToUpdateOutputStatus.ImageOriginalPath = item.ToString();
                 Console.WriteLine(item.ToString());
-                newPredictionToUpdateOutputStatus.ModelOutputscore = mop.Score.FirstOrDefault().ToString();
-                newPredictionToUpdateOutputStatus.ModelOutputPrediction = mop.Prediction;
+                newPredictionToUpdateOutputStatus.ModelOutputscore = result.Score.FirstOrDefault().ToString();
+                newPredictionToUpdateOutputStatus.ModelOutputPrediction = result.Prediction;
 
 
                 Console.WriteLine("number of items in observable collection");
@@ -244,22 +321,10 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
 
         }
 
-        private SynchronizationContext uiContext;
-        private void GetImageFilesAndBeginWorker()
+
+        private void workerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-
-            //  var uiContext = SynchronizationContext.Current;
-
-            //  synchronization context in the ui thread.
-            uiContext = SynchronizationContext.Current;
-            filesToProcess = Directory.GetFiles(InputDirText);
-            worker.RunWorkerAsync();
-
-        }
-
-        private void startClassifyingCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-         //   throw new NotImplementedException();
+            //   throw new NotImplementedException();
         }
         #endregion
 

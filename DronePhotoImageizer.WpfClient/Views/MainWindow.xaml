@@ -3,10 +3,63 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DronePhotoImageizer.WpfClient.Views"
+        xmlns:ViewModels="clr-namespace:DronePhotoImageizer.WpfClient.ViewModels"
+        xmlns:Views="clr-namespace:DronePhotoImageizer.WpfClient.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow"
+        Height="576"
+        Width="932">
     <Grid>
 
+        <TabControl HorizontalAlignment="Left"
+                    Height="538"
+                    Margin="10,10,0,0"
+                    VerticalAlignment="Top"
+                    Width="891"
+                    TabStripPlacement="Left"
+                    Grid.ColumnSpan="2">
+            <TabItem Header="Rename and Order Images">
+                <Views:RenameOrderImagesUCView />
+            </TabItem>
+
+            <TabItem Header="Image Inspector">
+                <TextBlock>... waiting for code</TextBlock>
+                <!--<Views:ImageInspectionUCView />-->
+            </TabItem>
+            <TabItem Header="Stitching">
+                <TextBlock>... waiting for code</TextBlock>
+                <!--<Views:StitchingImagesUCView />-->
+            </TabItem>
+            <TabItem Header="Batch Image Classification"
+                     Margin="-2,-2,0,-2">
+                <TabControl>
+                    <TabItem Header="2 Classes">
+                        <Grid Background="#FFE5E5E5">
+                            <Views:ClassifyImageByTwoUCView Margin="13,0,10,4" />
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="6 Classes">
+                        <Grid Background="#FFE5E5E5">
+                            <Views:ClassifyImageBySixUCView />
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+            <TabItem Header="Evauluate Model"
+                     HorizontalAlignment="Center"
+                     Height="20"
+                     VerticalAlignment="Center"
+                     Width="153">
+                <Grid Background="#FFE5E5E5" />
+            </TabItem>
+            <TabItem Header="Object Detection"
+                     HorizontalAlignment="Center"
+                     Height="20"
+                     VerticalAlignment="Center"
+                     Width="153">
+                <Grid Background="#FFE5E5E5" />
+            </TabItem>
+
+        </TabControl>
     </Grid>
 </Window>
