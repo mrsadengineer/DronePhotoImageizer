@@ -11,7 +11,13 @@ to apply trained models for image classicaion, to stitch together photo for an a
 
 
 #### todo
-create generic model from data on the web  
+[X] RenamingAndCombining algorithm for converting fresh drone photage to single directory, ordered and numbered files.  
+[X] UI for classifying and duplicating two-class-output directory (infrastructure/assets)  
+[ ] UI for classifying and duplicating six-class-output directory (infrastructure/assets)  
+[ ] Add Usercontrol for Resizing the images  
+[ ] User Control Stitching Map from multiple images (Emgu.CV) 
+[ ] Training models from client or web service (tensorflow or ml.net)  
+[ ] Emgu.CV to inspect images  
 
 ## learning objectives
 * FullStack C# (.NET 5)
@@ -32,20 +38,23 @@ create generic model from data on the web
 * Using Emgu.CV For Panorama Stitching
 * object detection
     * detects lables on stiched map or single image
+* x64 bit for Ml.NET
 
 ### wish list
 * web asp.net implementation
 * feature for building models from training
 * feature for transfer learning
 * Add features from hackathon 
-* More detail image 
+* More detail image
+* create generic model from data on the web  
 
 
 ## Technologies
 Project is created with:  
 
 WPF Client (.NET 5)  
-ML.NET  (1.5.3)
+ML.NET  (1.5.3)  
+SciSharp.Tensorflow.Redist (2.1.0)  
 
 
 ## Project status
