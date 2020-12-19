@@ -59,6 +59,15 @@
                      Width="153">
                 <Grid Background="#FFE5E5E5" />
             </TabItem>
+            <TabItem Header="Resizing"
+                     HorizontalAlignment="Center"
+                     Height="20"
+                     VerticalAlignment="Center"
+                     Width="153">
+                <Grid Background="#FFE5E5E5">
+                    <Views:ReizeDuplicatesUCView />
+                </Grid>
+            </TabItem>
 
         </TabControl>
     </Grid>

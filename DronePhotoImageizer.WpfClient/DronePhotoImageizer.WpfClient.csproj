@@ -20,12 +20,17 @@
     <PackageReference Include="Microsoft.ML.ImageAnalytics" Version="1.5.3" />
     <PackageReference Include="Microsoft.ML.Vision" Version="1.5.3" />
     <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.1.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <Page Update="Views\ClassifyImageBySixUCView.xaml">
       <CopyToOutputDirectory></CopyToOutputDirectory>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\ReizeDuplicatesUCView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
 
