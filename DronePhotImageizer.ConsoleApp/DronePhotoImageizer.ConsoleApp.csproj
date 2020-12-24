@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Program.cs~RF3b22bae4.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CommonImageProcessClassLibrary\CommonImageProcessClassLibrary.csproj" />
   </ItemGroup>
 

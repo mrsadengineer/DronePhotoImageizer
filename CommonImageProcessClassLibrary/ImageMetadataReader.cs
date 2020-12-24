@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CommonImageProcessClassLibrary
 {
-    class ImageMetadataReader
+   public class ImageMetadataReader
     {
 
 

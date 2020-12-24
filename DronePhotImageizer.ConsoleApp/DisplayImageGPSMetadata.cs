@@ -4,7 +4,11 @@ using System.Text;
 
 namespace DronePhotoImageizer.ConsoleApp
 {
-    class DisplayImageGPSMetadata
+     class DisplayImageGPSMetadata
     {
+
+
+
+
     }
 }
