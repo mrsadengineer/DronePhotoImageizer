@@ -10,14 +10,27 @@ to apply trained models for image classicaion, to stitch together photo for an a
  to detect objects from that image or others. These libraries will be listed in the technologies section.   
 
 
-#### todo
+#### todo and release planning
+
+##### version 0.3.0
 [X] RenamingAndCombining algorithm for converting fresh drone photage to single directory, ordered and numbered files.  
 [X] UI for classifying and duplicating two-class-output directory (infrastructure/assets)  
 [ ] UI for classifying and duplicating six-class-output directory (infrastructure/assets)  
-[ ] Add Usercontrol for Resizing the images  
+[ ] Add Usercontrol for Resizing the images 
+
+
+##### version 0.3.0+
+[ ] Creating a grid of images by gps coordinates metadata 
 [ ] User Control Stitching Map from multiple images (Emgu.CV) 
 [ ] Training models from client or web service (tensorflow or ml.net)  
 [ ] Emgu.CV to inspect images  
+[ ] add RELEASE 
+
+
+
+
+
+
 
 ## learning objectives
 * FullStack C# (.NET 5)
@@ -27,6 +40,8 @@ to apply trained models for image classicaion, to stitch together photo for an a
 * Batch processing
 * EMGU.CV for bindings to OpenCV
 * Select File/Directory dialogs in WPF
+* Developing for Multiple Platforms. using class libraries
+* (microsoft.ml.imageanalytics) ML.NET for classification and object detection 
 
 ### functional specs
 * Batch ordering, sorting, renaming, and resizing images
@@ -34,11 +49,20 @@ to apply trained models for image classicaion, to stitch together photo for an a
 *  -- Binary class
 *  -- Multi Class
 * resize images to lower processing needs for large files.
-  * (microsoft.ml.imageanalytics)
-* Using Emgu.CV For Panorama Stitching
+* Using Emgu.CV For Panorama/Scans Stitching
 * object detection
     * detects lables on stiched map or single image
+* Inspect collection of images as stats
+  * number of images
+  * max and min in gps metadata
+  * list all metadata
+  * list readable metadata
+* create grid/matrix of photos by gps to begin to stitch
+
+### technicals specs 
 * x64 bit for Ml.NET
+* include 
+
 
 ### wish list
 * web asp.net implementation
@@ -49,12 +73,14 @@ to apply trained models for image classicaion, to stitch together photo for an a
 * create generic model from data on the web  
 
 
-## Technologies
+## Technologies and Tools
 Project is created with:  
 
+Visual studio 2019 community  
 WPF Client (.NET 5)  
 ML.NET  (1.5.3)  
-SciSharp.Tensorflow.Redist (2.1.0)  
+SciSharp.Tensorflow.Redist (2.1.0)   
+SixLabors.ImageSharp (1.0.2)  
 
 
 ## Project status
