@@ -21,24 +21,46 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
         private string targetDirectoryPath;
         private string _inputDirText;
         private string _outputDirText;
-
+        private string _modelInputFileText;
         private int _imageClassificationCount = 0;
         private string[] filesToProcess;
         private readonly BackgroundWorker worker = new BackgroundWorker();
         private ObservableCollection<CustomTwoClassificationImagePredictionResults> _predictedResults;
+        private SynchronizationContext uiContext;
 
-        //private ReadOnlyDictionary< labelPathDictionary
 
 
+        #region constructor, worker, and completed 
         public ClassifyImageBySixViewModel()//constructor
         {
             worker.DoWork += startClassifying;
             worker.RunWorkerCompleted += startClassifyingCompleted;
 
         }
+       
+        
+        private void GetImageFilesAndBeginWorker()
+        {
+            //  synchronization context in the ui thread.
+            uiContext = SynchronizationContext.Current;
+            filesToProcess = Directory.GetFiles(InputDirText);
+            worker.RunWorkerAsync();
 
-        #region MVVM Properties and Commands
+        }
+        private void startClassifyingCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            //   throw new NotImplementedException();
+        }
 
+        #endregion
+
+
+        #region mvvm commands
+
+        public ICommand SetTrainedInputModelFile
+        {
+            get { return new DelegateCommand(SetTrainedInputModelFileMethod); }
+        }
         public ICommand ClassifyAndCopy
         {
             get { return new DelegateCommand(GetImageFilesAndBeginWorker); }
@@ -54,6 +76,10 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
             get { return new DelegateCommand(SetOutputDirectoryMethod); } //win32 directory select dialog
         }
 
+
+        #endregion 
+
+        #region MVVM Bindable Properties
         public ObservableCollection<CustomTwoClassificationImagePredictionResults> PredictionResults
 
         {
@@ -64,8 +90,6 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
                 RaisePropertyChangedEvent("PredictionResults");
             }
         }
-
-
         public string InputDirText
         {
             get { return _inputDirText; }
@@ -84,10 +108,19 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
                 RaisePropertyChangedEvent("OutputDirText");
             }
         }
+        public string ModelInputFileText
+        {
+            get { return _modelInputFileText; }
+            set
+            {
+                _modelInputFileText = value;
+                RaisePropertyChangedEvent("ModelInputFileText");
+            }
+        }
         #endregion
 
-        #region commons file/directory win32 interaction
 
+        #region commons file/directory win32 interaction
         private void SetInputDirectoryMethod()
         {
             // Create a "Save As" dialog for selecting a directory (HACK)
@@ -117,7 +150,6 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
                 InputDirText = path;
             }
         }
-
         private void SetOutputDirectoryMethod()
         {
             // Create a "Save As" dialog for selecting a directory (HACK)
@@ -146,9 +178,34 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
 
             }
         }
+        private void SetTrainedInputModelFileMethod()
+        {
+            // Create a "Save As" dialog for selecting a directory (HACK)
+            var dialog = new Microsoft.Win32.OpenFileDialog();
+            //    dialog.InitialDirectory = inputdir_classify_txtbx.Text; // Use current value for initial dir
+            //dialog.InitialDirectory = InputDirText; // Use current value for initial dir
+            dialog.InitialDirectory = Environment.CurrentDirectory;
+            //  sourceDirectory = inputdir_classify_txtbx.Text;
+            //   sourceDirectory = InputDirText;
 
+
+            dialog.Title = "Select a Trained Model"; // instead of default "Save As"
+                                                     // dialog.Filter = "Directory|*.this.directory"; // Prevents displaying files
+                                                     // dialog.FileName = "select"; // Filename will then be "select.this.directory"
+
+            // Set filter for file extension and default file extension 
+            dialog.DefaultExt = ".zip";
+            dialog.Filter = "ZIP File (*.zip)|*.zip";//"JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
+
+
+
+            if (dialog.ShowDialog() == true)
+            {
+                string path = dialog.FileName;
+                ModelInputFileText = path;
+            }
+        }
         #endregion
-
 
 
         #region predictions
@@ -217,14 +274,21 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
                 ModelInput mip = new ModelInput();
                 mip.Label = "none";
                 mip.ImageSource = item;
-                ModelOutput mop = ConsumeModel.Predict(mip, ConsumeModel.ClassicationModelEnum.classsix);
 
+
+
+
+
+                //##########################################################
+
+                ModelOutput mop = ConsumeModel.Predict(mip, ConsumeModel.ClassicationModelEnum.classsix);
 
 
 
 
                 string toprintDebugConsole = $"prediction class: {mop.Prediction}|| score: {mop.Score.FirstOrDefault()}";
 
+                //##########################################################
                 Console.WriteLine(toprintDebugConsole);
                 Console.WriteLine(mop.Prediction.ToString());
                 Console.WriteLine(mop.Score.FirstOrDefault());
@@ -261,23 +325,7 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
 
         }
 
-        private SynchronizationContext uiContext;
-        private void GetImageFilesAndBeginWorker()
-        {
 
-            //  var uiContext = SynchronizationContext.Current;
-
-            //  synchronization context in the ui thread.
-            uiContext = SynchronizationContext.Current;
-            filesToProcess = Directory.GetFiles(InputDirText);
-            worker.RunWorkerAsync();
-
-        }
-
-        private void startClassifyingCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            //   throw new NotImplementedException();
-        }
         #endregion
 
     }

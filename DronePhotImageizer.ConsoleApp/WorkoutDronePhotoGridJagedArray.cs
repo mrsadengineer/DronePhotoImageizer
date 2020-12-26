@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 
 using CommonImageProcessClassLibrary;
@@ -15,6 +14,8 @@ namespace DronePhotoImageizer.ConsoleApp
 
         //count the number of  rows and columns 
         //based on the number up and downs in gps values
+
+        //maybe create List<int[]> or something similiar.
 
 
         string home = @"E:\__WORKING_DATA_RESIZED";
@@ -41,7 +42,7 @@ namespace DronePhotoImageizer.ConsoleApp
             string[] files = System.IO.Directory.GetFiles(home);
             float currentlat;
             float currentlong;
-            bool creatingRow = true;
+            bool isLatMovingUp = true;
 
             List<int> numbofColums = new List<int>();
             float previousItemLat = 0;
@@ -67,27 +68,27 @@ namespace DronePhotoImageizer.ConsoleApp
 
 
     
-                //need to build new jagged array.
-                //counting columns in one row. adding to list column count.
+
+                //counting columns in in rows. final number of list and int is dimension of 
 
 
+
+
+                //assuming first is at the lowest latitude degree. Each higher latitude image is added to the first row.
+                //After shift, each latitued that is getting smaller will be in that row. It goes back when the 
+                //lat goes the other way. It goes on like this like a zigzag. 
                 if (isFirst)
                 {
                     previousItemLat = currentlat;
                     isFirst = false;
                 }
-
-
-                //assuming first is at the lowest latitude degree. Each higher latitude image is added to the first row.
-                //After shift, each latitued that is getting smaller will be in that row. It goes back and for like 
-                //zigzag. 
-                if (creatingRow)
+                if (isLatMovingUp)
                 {
                     if (previousItemLat > currentlat)
                     {
                         Console.WriteLine(item);
                         numbofColums.Add(columncount);
-                        creatingRow = false;
+                        isLatMovingUp = false;
                         //lastColumnHighLat = currentlat;
                         columncount = 0;
                         totalColumnCount++;
@@ -97,7 +98,7 @@ namespace DronePhotoImageizer.ConsoleApp
                 //counting columns moving other direction in row
                 else if (previousItemLat < currentlat)
                 {
-                    creatingRow = true;
+                    isLatMovingUp = true;
                     numbofColums.Add(columncount);
                     columncount = 0;
                     //lastColumnLowLat = currentlat;

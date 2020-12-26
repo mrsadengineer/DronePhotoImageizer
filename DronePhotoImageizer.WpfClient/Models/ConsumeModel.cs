@@ -48,6 +48,11 @@ namespace DronePhotoImageizer.WpfClient.Models
 
             //            string modelPath = @"C:\Users\Sammy\AppData\Local\Temp\MLVSTools\ATS_DroneToolsML\ATS_DroneToolsML.Model\MLModel.zip";
 
+
+
+
+
+
             string modelPath = System.IO.Path.Combine(curdir, modelnamepath);
             ITransformer mlModel = mlContext.Model.Load(modelPath, out var modelInputSchema);
             var predEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(mlModel);

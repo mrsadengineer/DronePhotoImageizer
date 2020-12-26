@@ -15,19 +15,19 @@ to apply trained models for image classicaion, to stitch together photo for an a
 ##### version 0.3.0
 [X] RenamingAndCombining algorithm for converting fresh drone photage to single directory, ordered and numbered files.  
 [X] UI for classifying and duplicating two-class-output directory (infrastructure/assets)  
-[ ] UI for classifying and duplicating six-class-output directory (infrastructure/assets)  
-[ ] Add Usercontrol for Resizing the images 
+[ ] UI for classifying and duplicating six-class-output directory (inventory/infrastructure/vehicles/road/water/field)  
+[X] Add Usercontrol for Resizing the images 
 
 
-##### version 0.3.0+
+##### version beyond
 [ ] Creating a grid of images by gps coordinates metadata 
 [ ] User Control Stitching Map from multiple images (Emgu.CV) 
 [ ] Training models from client or web service (tensorflow or ml.net)  
-[ ] Emgu.CV to inspect images  
-[ ] add RELEASE 
-
-
-
+[ ] Emgu.CV to inspect images 
+[ ] Inspect directory of images
+[ ] object detection
+[ ] evaluate models
+[ ] add RELEASE/CHANGELOG 
 
 
 
@@ -89,7 +89,13 @@ The source code is being converted from a previous beta project. The version num
 ## Sources
 https://www.markwithall.com/programming/2013/03/01/worlds-simplest-csharp-wpf-mvvm-example.html   
 https://stackoverflow.com/questions/5483565/how-to-use-wpf-background-worker  
-https://stackoverflow.com/questions/10315188/open-file-dialog-and-select-a-file-using-wpf-controls-and-c-sharp  
+https://stackoverflow.com/questions/10315188/open-file-dialog-and-select-a-file-using-wpf-controls-and-c-sharp   
+https://stackoverflow.com/questions/5483565/how-to-use-wpf-background-worker  
+https://docs.microsoft.com/en-us/dotnet/framework/cross-platform/using-portable-class-library-with-model-view-view-model  
+https://www.exiv2.org/tags.html  
+https://stackoverflow.com/questions/4983766/getting-gps-data-from-an-images-exif-in-c-sharp  
+
+
 
 ## Setup and Launch
 

@@ -9,55 +9,22 @@
         Title="MainWindow"
         Height="576"
         Width="932">
-    <Grid>
+    <StackPanel>
 
-        <TabControl HorizontalAlignment="Left"
-                    Height="538"
-                    Margin="10,10,0,0"
-                    VerticalAlignment="Top"
+        <Label Content="Drone Photo Imageizer - 0.3.0"
+               HorizontalAlignment="Right"
+               FontWeight="Bold"
+               FontSize="16" />
+
+        <TabControl Height="538"
                     Width="891"
-                    TabStripPlacement="Left"
-                    Grid.ColumnSpan="2">
+                    TabStripPlacement="Left">
             <TabItem Header="Rename and Order Images">
                 <Views:RenameOrderImagesUCView />
             </TabItem>
-
-            <TabItem Header="Image Inspector">
-                <TextBlock>... waiting for code</TextBlock>
-                <!--<Views:ImageInspectionUCView />-->
-            </TabItem>
-            <TabItem Header="Stitching">
-                <TextBlock>... waiting for code</TextBlock>
-                <!--<Views:StitchingImagesUCView />-->
-            </TabItem>
-            <TabItem Header="Batch Image Classification"
-                     Margin="-2,-2,0,-2">
-                <TabControl>
-                    <TabItem Header="2 Classes">
-                        <Grid Background="#FFE5E5E5">
-                            <Views:ClassifyImageByTwoUCView Margin="13,0,10,4" />
-                        </Grid>
-                    </TabItem>
-                    <TabItem Header="6 Classes">
-                        <Grid Background="#FFE5E5E5">
-                            <Views:ClassifyImageBySixUCView />
-                        </Grid>
-                    </TabItem>
-                </TabControl>
-            </TabItem>
-            <TabItem Header="Evauluate Model"
-                     HorizontalAlignment="Center"
-                     Height="20"
-                     VerticalAlignment="Center"
-                     Width="153">
-                <Grid Background="#FFE5E5E5" />
-            </TabItem>
-            <TabItem Header="Object Detection"
-                     HorizontalAlignment="Center"
-                     Height="20"
-                     VerticalAlignment="Center"
-                     Width="153">
-                <Grid Background="#FFE5E5E5" />
+            <TabItem Margin="-2,-2,0,-2"
+                     Header="Batch Image Classification">
+                <Views:ImageClassificationWMLNETUCView Margin="0,0,0,53" />
             </TabItem>
             <TabItem Header="Resizing"
                      HorizontalAlignment="Center"
@@ -70,5 +37,5 @@
             </TabItem>
 
         </TabControl>
-    </Grid>
+    </StackPanel>
 </Window>
