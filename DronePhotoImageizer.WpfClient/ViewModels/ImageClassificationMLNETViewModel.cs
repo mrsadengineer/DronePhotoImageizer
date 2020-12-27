@@ -8,25 +8,19 @@ using System.Windows.Input;
 using DronePhotoImageizer.WpfClient.MVVMFramework;
 using DronePhotoImageizer.WpfClient.Models;
 using Microsoft.ML;
-
-
-
+using System.Collections.Generic;
+using System.Windows.Threading;
 
 namespace DronePhotoImageizer.WpfClient.ViewModels
 {
     public class ImageClassificationMLNETViewModel : ObservableObject
     {
 
-
-        private string _statusString;
-        private string _progressString;
-
-        private string _inputDirText;
-        private string _outputDirText;
-        private string _modelInputFileText;
         private readonly BackgroundWorker worker;
 
-        #region MVVM Bindable Properties
+        #region MVVM Bindable Public Properties and Private Fields
+        
+        private string _statusString;
         public string StatusString
         {
             get { return _statusString; }
@@ -36,6 +30,8 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
                 RaisePropertyChangedEvent("StatusString");
             }
         }
+
+        private string _progressString;
         public string ProgressString
         {
             get { return _progressString; }
@@ -45,6 +41,8 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
                 RaisePropertyChangedEvent("ProgressString");
             }
         }
+
+        private string _inputDirText;
         public string InputDirText
         {
             get { return _inputDirText; }
@@ -54,6 +52,8 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
                 RaisePropertyChangedEvent("InputDirText");
             }
         }
+
+        private string _outputDirText;
         public string OutputDirText
         {
             get { return _outputDirText; }
@@ -63,6 +63,8 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
                 RaisePropertyChangedEvent("OutputDirText");
             }
         }
+        
+        private string _modelInputFileText;
         public string ModelInputFileText
         {
             get { return _modelInputFileText; }
@@ -72,9 +74,68 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
                 RaisePropertyChangedEvent("ModelInputFileText");
             }
         }
-        #endregion
 
-        #region nfile/directory methods dialog (win32) 
+        private string _itemNameString;
+        public string ItemNameString
+        {
+            get { return _itemNameString; }
+            set
+            {
+                _itemNameString = value;
+                RaisePropertyChangedEvent("ItemNameString");
+            }
+        }
+
+        private string _classificationString;
+        public string ClassificationString
+        {
+            get { return _classificationString; }
+            set
+            {
+                _classificationString = value;
+                RaisePropertyChangedEvent("ClassificationString");
+            }
+        }
+        
+        private string _scoreString;
+        public string ScoreString
+        {
+            get { return _scoreString; }
+            set
+            {
+                _scoreString = value;
+                RaisePropertyChangedEvent("ScoreString");
+            }
+        }
+        
+        private string _imageCountString;
+        public string ImageCountString
+        {
+            get { return _imageCountString; }
+            set
+            {
+                _imageCountString = value;
+                RaisePropertyChangedEvent("ImageCountString");
+            }
+        }
+
+        private ObservableCollection<string> _classificationListOfStrings;
+        public ObservableCollection<string> ClassificationListOfStrings
+        {
+            get { return _classificationListOfStrings; }
+            set
+            {
+                _classificationListOfStrings = value;
+                RaisePropertyChangedEvent("ClassificationListOfStrings");
+            }
+        }
+
+
+
+
+        #endregion
+        
+        #region File/Directory Dialog (win32) Methods 
 
         private void SetInputDirectoryMethod()
         {
@@ -165,6 +226,7 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
         }
 
         #endregion
+
         #region MVVM Commands
         public ICommand ClassifyAndCopy
         {
@@ -188,9 +250,13 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
             get { return new DelegateCommand(CancelAsyncButton_Clicked); }
         }
         #endregion
-        #region Constructor and background worker logic 
+        
+        #region Constructor and BackgroundWorker Logic 
+        
         public ImageClassificationMLNETViewModel()
         {
+            _classificationListOfStrings = new ObservableCollection<string>(); 
+            uiContext = AsyncOperationManager.SynchronizationContext;
             worker = new BackgroundWorker();
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
@@ -198,30 +264,36 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
             worker.DoWork += workerDoWork;
             worker.RunWorkerCompleted += workerCompleted;
             worker.ProgressChanged += Worker_ProgressChanged;
+
+
         }
 
-
-
-        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            // throw new NotImplementedException();
-
-            ProgressString = e.ProgressPercentage.ToString();
-            System.Diagnostics.Debug.WriteLine(ProgressString);
-        }
-
-
+        SynchronizationContext uiContext;// = SynchronizationContext
         private void startGetImageFileAndClassifcationWork()
         {
+            ProgressString = "0";
             //  synchronization context in the ui thread.
-            // uiContext = SynchronizationContext.Current;
+            //var 
+                uiContext = SynchronizationContext.Current;
+
             worker.RunWorkerAsync();
 
+        }
+        private void workerDoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+
+            //todo: check if member fields are not null
+            e.Result = ClassifyDuplicateSortDronoPhotos(_modelInputFileText, _inputDirText, _outputDirText, worker, e);
+
+        }
+        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            ProgressString = e.ProgressPercentage.ToString();
         }
         private void CancelAsyncButton_Clicked()
         {
             worker.CancelAsync();
-
         }
         private void workerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -254,32 +326,33 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
                 {
                     StatusString = "Something happened";
                 }
-                //StatusString = "Completed";
             }
         }
 
-        private void workerDoWork(object sender, DoWorkEventArgs e)
-        {
-            BackgroundWorker worker = sender as BackgroundWorker;
 
-            //todo: check if member fields are not null
-            e.Result = ClassifyDuplicateSortDronoPhotos(_modelInputFileText, _inputDirText, _outputDirText, worker, e);
-
+        private void UpdateListBox()
+        {//not using, but storing now to consider using delegate methods for updating UI thread from bgworker. Not tested,
+            //but considering it as alternative. 
+            ClassificationListOfStrings.Add(_classificationString);
         }
+
+        private delegate void UpdateUIDelegate();
 
         private bool ClassifyDuplicateSortDronoPhotos(string modelInputFileText, string inputDirText, string outputDirText, BackgroundWorker worker, DoWorkEventArgs e)
         {
             StatusString = "initializing prediction engine";
             int imageClassificationCount = 0;
+            ImageCountString = imageClassificationCount.ToString();
             int highestPercentageReached = 0;
             string[] filesToProcess = Directory.GetFiles(inputDirText);
             MLContext mlContext = new MLContext();
             ITransformer mlModel = mlContext.Model.Load(modelInputFileText, out var modelInputSchema);
             var predEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(mlModel);
+            
 
-            StatusString = "In Progress";
             foreach (var item in filesToProcess)
             {
+            StatusString = "In Progress";
                 if (worker.CancellationPending)
                 {
                     e.Cancel = true;
@@ -295,12 +368,24 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
                     System.Diagnostics.Debug.WriteLine(imageClassificationCount++);
                     System.Diagnostics.Debug.WriteLine(item);
                     System.Diagnostics.Debug.WriteLine(toprintDebugConsole);
-                    //StatusString = toprintDebugConsole;
+                    //Updating UI Properties on Predictions
+                    ItemNameString = item;
+                    ClassificationString = result.Prediction;
+                    ScoreString = result.Score.FirstOrDefault().ToString();
+                    ImageCountString = imageClassificationCount.ToString();
+                    //create destination and/or save new file to destination location and prediction
                     var filename = System.IO.Path.GetFileName(item);
                     string disclass = System.IO.Path.Combine(outputDirText, result.Prediction);
-                    //
+                    //TODO: find another way to compare and upload UI on the classifications found from the model.
                     if (!System.IO.Directory.Exists(disclass))
                     {
+                        // uiContext.Send(x => ClassificationListOfStrings.Add(result.Prediction.ToString()), null);
+                        uiContext.Post(x => ClassificationListOfStrings.Add(result.Prediction.ToString()), null);
+                        //Dispatcher.CurrentDispatcher.Invoke(new Action(delegate ()
+                        //{
+                        //    ClassificationListOfStrings.Add(result.Prediction.ToString());
+                        //}));
+                        //ClassificationListOfStrings.Add(result.Prediction.ToString());
                         System.IO.Directory.CreateDirectory(disclass);
                     }
                     var destfile = System.IO.Path.Combine(disclass, filename);
@@ -318,62 +403,9 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
             return true;// all files have been classifed and sorted
         }
         #endregion
-
     }
 }
 
 
 
 
-
-//private string _targetOutputDirectoryPath;
-//private int _imageClassificationCount = 0;
-//private ObservableCollection<CustomTwoClassificationImagePredictionResults> _predictedResults;
-//public ObservableCollection<CustomTwoClassificationImagePredictionResults> PredictionResults
-//{
-//    get { return _predictedResults; }
-//    set
-//    {
-//        _predictedResults = value;
-//        RaisePropertyChangedEvent("PredictionResults");
-//    }
-//}
-//var inventoryDir = System.IO.Path.Combine(outputDirText, "inventory");
-//Console.WriteLine(inventoryDir);
-//Console.WriteLine(inventoryDir);
-//var infrastructureDir = System.IO.Path.Combine(outputDirText, "infrastructure");
-//Console.WriteLine(infrastructureDir);
-//if (!System.IO.Directory.Exists(inventoryDir))
-//{
-//    System.IO.Directory.CreateDirectory(inventoryDir);
-//}
-//if (!System.IO.Directory.Exists(infrastructureDir))
-//{
-//    System.IO.Directory.CreateDirectory(infrastructureDir);
-//}
-
-//check to see if all there string items varilables exist. 
-//should probably check for inputdirecttext is validated
-// _filesToProcess 
-//I need property and feild for data binding of the text box for model location
-// _predictedResults = new ObservableCollection<CustomTwoClassificationImagePredictionResults>();
-// _targetOutputDirectoryPath = OutputDirText;
-//// Load model & 
-//create prediction engine
-
-//create output directories
-//Console.WriteLine(outputDirText);
-// Report progress as a percentage of the total task.
-//update ui with
-//var newPredictionToUpdateOutputStatus = new CustomTwoClassificationImagePredictionResults();
-//newPredictionToUpdateOutputStatus.PredictionId = _imageClassificationCount.ToString();
-//newPredictionToUpdateOutputStatus.ImageOriginalPath = item.ToString();
-//Console.WriteLine(item.ToString());
-//newPredictionToUpdateOutputStatus.ModelOutputscore = result.Score.FirstOrDefault().ToString();
-//newPredictionToUpdateOutputStatus.ModelOutputPrediction = result.Prediction;
-//from the backgroud thread in backgroudworker, I need to call the ui thread to update the listview
-//uiContext.Send(x => PredictionResults.Add(newPredictionToUpdateOutputStatus), null);
-//PredictionResults.Add(newPredictionToUpdateOutputStatus);
-//for me
-//System.Diagnostics.Debug.Write("PredictionResults Count: ");
-//System.Diagnostics.Debug.WriteLine(PredictionResults.Count.ToString());

@@ -18,7 +18,7 @@
                     Orientation="Vertical"
                     VerticalAlignment="Top">
 
-            <Label Content="Images Classifying and Sorting"
+            <Label Content="Images - Classifying and Sorting"
                    FontSize="20"
                    FontWeight="Bold"
                    FontFamily="Myanmar Text" />
@@ -78,35 +78,74 @@
                   Height="268"
                   Width="694">
                 <GroupBox Header="Description"
-                          Margin="0,0,531,195">
-                    <TextBlock HorizontalAlignment="Left"
-                               TextWrapping="Wrap"
-                               Text="Classify, duplicate, and sort images"
+                          Margin="6,0,525,178">
+                    <TextBlock TextWrapping="Wrap"
+                               Text="Classify, duplicate, and sort images to new directories under output directory."
                                VerticalAlignment="Center"
-                               Width="142"
-                               Height="34" />
+                               Height="58"
+                               TextAlignment="Justify"
+                               Margin="0,0,-2,0" />
                 </GroupBox>
-                <Button Content="|&gt; Execute"
+                <Button Content="START"
                         Command="{Binding ClassifyAndCopy}"
-                        Margin="6,91,536,0"
+                        Margin="6,95,525,0"
                         Height="25"
                         VerticalAlignment="Top" />
                 <GroupBox Header="Classifications"
                           Margin="521,4,0,10">
-                    <StackPanel HorizontalAlignment="Left"
-                                Height="164"
-                                VerticalAlignment="Top"
-                                Width="153" />
+                    <ListBox ItemsSource="{Binding ClassificationListOfStrings}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+
+                                    <TextBlock Text="{Binding}" />
+        
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                 </GroupBox>
                 <GroupBox Header="Status Output"
-                          Margin="182,4,178,118">
-                    <StackPanel HorizontalAlignment="Center"
+                          Margin="182,4,178,82">
+                    <StackPanel HorizontalAlignment="Left"
                                 Orientation="Vertical"
-                                VerticalAlignment="Top">
-                        <Label Content="Label" />
-                        <Label Content="{Binding StatusString}"
-                               x:Name="statusLabel" />
-                        <Label Content="{Binding ProgressString}" />
+                                VerticalAlignment="Top"
+                                Width="324"
+                                Height="165">
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Left">
+                            <Label Content="Status: "
+                                   Width="96" />
+                            <Label Content="{Binding StatusString}"
+                                   x:Name="statusLabel"
+                                   RenderTransformOrigin="0.5,0.5" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Image Count:"
+                                   Width="96" />
+                            <Label Content="{Binding ImageCountString}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Item: "
+                                   Width="96" />
+                            <Label Content="{Binding ItemNameString}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Classification: "
+                                   Width="96" />
+                            <Label Content="{Binding ClassificationString}"
+                                   x:Name="statusLabel2" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Score: "
+                                   Width="96" />
+                            <Label Content="{Binding ScoreString}"
+                                   x:Name="statusLabel1" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Percent Done: "
+                                   Width="96" />
+                            <Label Content="{Binding ProgressString}"
+                                   x:Name="statusLabel3" />
+                        </StackPanel>
                         <!--<ListView Height="241"
                                   Width="504"
                                   ItemsSource="{Binding PredictionResults}">-->
@@ -126,9 +165,9 @@
                         <!--</ListView>-->
                     </StackPanel>
                 </GroupBox>
-                <Button Content="CANCEL"
+                <Button Content="STOP"
                         Command="{Binding CancelAsyncBackgroundWorker}"
-                        Margin="6,125,536,0"
+                        Margin="6,125,525,0"
                         Height="25"
                         VerticalAlignment="Top" />
             </Grid>
