@@ -14,33 +14,19 @@ using Microsoft.ML;
 
 namespace DronePhotoImageizer.WpfClient.ViewModels
 {
-   public class ImageClassificationMLNETViewModel : ObservableObject
+    public class ImageClassificationMLNETViewModel : ObservableObject
     {
-        private int highestPercentageReached;// = 0;
+
 
         private string _statusString;
         private string _progressString;
 
-        private string _targetOutputDirectoryPath;
         private string _inputDirText;
         private string _outputDirText;
         private string _modelInputFileText;
-        private int _imageClassificationCount = 0;
-        private string[] _filesToProcess;
-        private ObservableCollection<CustomTwoClassificationImagePredictionResults> _predictedResults;
-        private SynchronizationContext uiContext;
+        private readonly BackgroundWorker worker;
+
         #region MVVM Bindable Properties
-
-        public ObservableCollection<CustomTwoClassificationImagePredictionResults> PredictionResults
-
-        {
-            get { return _predictedResults; }
-            set
-            {
-                _predictedResults = value;
-                RaisePropertyChangedEvent("PredictionResults");
-            }
-        }
         public string StatusString
         {
             get { return _statusString; }
@@ -59,11 +45,6 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
                 RaisePropertyChangedEvent("ProgressString");
             }
         }
-
-
-
-
-
         public string InputDirText
         {
             get { return _inputDirText; }
@@ -92,7 +73,8 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
             }
         }
         #endregion
-        #region commons file/directory win32 dialog interaction
+
+        #region nfile/directory methods dialog (win32) 
 
         private void SetInputDirectoryMethod()
         {
@@ -182,7 +164,6 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
             }
         }
 
-
         #endregion
         #region MVVM Commands
         public ICommand ClassifyAndCopy
@@ -201,25 +182,25 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
         {
             get { return new DelegateCommand(SetTrainedInputModelFileMethod); }
         }
-       
+
         public ICommand CancelAsyncBackgroundWorker
         {
             get { return new DelegateCommand(CancelAsyncButton_Clicked); }
         }
         #endregion
-
-        private readonly BackgroundWorker worker;// = new BackgroundWorker();
-        #region constructor, worker, and completed 
+        #region Constructor and background worker logic 
         public ImageClassificationMLNETViewModel()
         {
             worker = new BackgroundWorker();
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
-            
+
             worker.DoWork += workerDoWork;
             worker.RunWorkerCompleted += workerCompleted;
             worker.ProgressChanged += Worker_ProgressChanged;
         }
+
+
 
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
@@ -229,21 +210,19 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
             System.Diagnostics.Debug.WriteLine(ProgressString);
         }
 
+
         private void startGetImageFileAndClassifcationWork()
         {
             //  synchronization context in the ui thread.
-            uiContext = SynchronizationContext.Current;
+            // uiContext = SynchronizationContext.Current;
             worker.RunWorkerAsync();
 
         }
-
         private void CancelAsyncButton_Clicked()
         {
             worker.CancelAsync();
 
         }
-
-
         private void workerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             //   throw new NotImplementedException();            
@@ -266,128 +245,135 @@ namespace DronePhotoImageizer.WpfClient.ViewModels
             {
                 // Finally, handle the case where the operation 
                 // succeeded.
-                // StatusString = e.Result.ToString();
-                StatusString = "Completed";
+                //StatusString = e.Result.ToString();
+                if ((bool)e.Result)
+                {
+                    StatusString = "Success";
+                }
+                else
+                {
+                    StatusString = "Something happened";
+                }
+                //StatusString = "Completed";
             }
         }
-        #endregion
-
-
-
-        #region predictions
-
 
         private void workerDoWork(object sender, DoWorkEventArgs e)
         {
-            // Get the BackgroundWorker that raised this event.
-      BackgroundWorker worker = sender as BackgroundWorker;
+            BackgroundWorker worker = sender as BackgroundWorker;
 
-            StatusString = "initializing prediction engine";
-
-
-            //should probably check for inputdirecttext is validated
-            _filesToProcess = Directory.GetFiles(InputDirText);
-            //I need property and feild for data binding of the text box for model location
-            _predictedResults = new ObservableCollection<CustomTwoClassificationImagePredictionResults>();
-            _targetOutputDirectoryPath = OutputDirText;
-
-
-            MLContext mlContext = new MLContext();
-            //// Load model & 
-            ITransformer mlModel = mlContext.Model.Load(_modelInputFileText, out var modelInputSchema);
-            //create prediction engine
-            var predEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(mlModel);
-
-
-
-
-
-
-            //create output directories
-
-            Console.WriteLine(_targetOutputDirectoryPath);
-            var inventoryDir = System.IO.Path.Combine(_targetOutputDirectoryPath, "inventory");
-            Console.WriteLine(inventoryDir);
-            Console.WriteLine(inventoryDir);
-            var infrastructureDir = System.IO.Path.Combine(_targetOutputDirectoryPath, "infrastructure");
-            Console.WriteLine(infrastructureDir);
-            if (!System.IO.Directory.Exists(inventoryDir))
-            {
-                System.IO.Directory.CreateDirectory(inventoryDir);
-            }
-            if (!System.IO.Directory.Exists(infrastructureDir))
-            {
-                System.IO.Directory.CreateDirectory(infrastructureDir);
-            }
-
-            StatusString = "In Progress";
-            foreach (var item in _filesToProcess)
-            {
-             
-                
-                ModelInput mip = new ModelInput();
-                mip.Label = "none";//useful for evaluation section 
-                mip.ImageSource = item;
-
-                ModelOutput result = predEngine.Predict(mip);
-                string toprintDebugConsole = $"prediction class: {result.Prediction}|| score: {result.Score.FirstOrDefault()}";
-
-
-
-                System.Diagnostics.Debug.WriteLine(_imageClassificationCount++);
-                System.Diagnostics.Debug.WriteLine(item);
-                System.Diagnostics.Debug.WriteLine(toprintDebugConsole);
-
-                StatusString = toprintDebugConsole;
-
-
-                var filename = System.IO.Path.GetFileName(item);
-                //Console.WriteLine(filename);
-                string disclass = System.IO.Path.Combine(_targetOutputDirectoryPath, result.Prediction);
-                //Console.WriteLine(disclass);
-                var destfile = System.IO.Path.Combine(disclass, filename);
-                Console.WriteLine(destfile);
-                System.IO.File.Copy(item, destfile, true);
-
-               
-                //precentage
-                // Report progress as a percentage of the total task.
-                int percentComplete =
-                    (int)((float)_imageClassificationCount/ (float)_filesToProcess.Length * 100);
-                if (percentComplete > highestPercentageReached)
-                {
-                    highestPercentageReached = percentComplete;
-                    worker.ReportProgress(percentComplete);
-                }
-
-
-
-
-
-
-
-
-
-                //update ui with
-                //var newPredictionToUpdateOutputStatus = new CustomTwoClassificationImagePredictionResults();
-                //newPredictionToUpdateOutputStatus.PredictionId = _imageClassificationCount.ToString();
-                //newPredictionToUpdateOutputStatus.ImageOriginalPath = item.ToString();
-                //Console.WriteLine(item.ToString());
-                //newPredictionToUpdateOutputStatus.ModelOutputscore = result.Score.FirstOrDefault().ToString();
-                //newPredictionToUpdateOutputStatus.ModelOutputPrediction = result.Prediction;
-                //from the backgroud thread in backgroudworker, I need to call the ui thread to update the listview
-                //uiContext.Send(x => PredictionResults.Add(newPredictionToUpdateOutputStatus), null);
-                //PredictionResults.Add(newPredictionToUpdateOutputStatus);
-                //for me
-                //System.Diagnostics.Debug.Write("PredictionResults Count: ");
-                //System.Diagnostics.Debug.WriteLine(PredictionResults.Count.ToString());
-
-
-            }
+            //todo: check if member fields are not null
+            e.Result = ClassifyDuplicateSortDronoPhotos(_modelInputFileText, _inputDirText, _outputDirText, worker, e);
 
         }
 
+        private bool ClassifyDuplicateSortDronoPhotos(string modelInputFileText, string inputDirText, string outputDirText, BackgroundWorker worker, DoWorkEventArgs e)
+        {
+            StatusString = "initializing prediction engine";
+            int imageClassificationCount = 0;
+            int highestPercentageReached = 0;
+            string[] filesToProcess = Directory.GetFiles(inputDirText);
+            MLContext mlContext = new MLContext();
+            ITransformer mlModel = mlContext.Model.Load(modelInputFileText, out var modelInputSchema);
+            var predEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(mlModel);
+
+            StatusString = "In Progress";
+            foreach (var item in filesToProcess)
+            {
+                if (worker.CancellationPending)
+                {
+                    e.Cancel = true;
+                }
+                else
+                {
+                    ModelInput mip = new ModelInput();
+                    mip.Label = "none";//useful for evaluation section 
+                    mip.ImageSource = item;
+                    ModelOutput result = predEngine.Predict(mip);
+                    //Degbugging
+                    string toprintDebugConsole = $"prediction class: {result.Prediction}|| score: {result.Score.FirstOrDefault()}";
+                    System.Diagnostics.Debug.WriteLine(imageClassificationCount++);
+                    System.Diagnostics.Debug.WriteLine(item);
+                    System.Diagnostics.Debug.WriteLine(toprintDebugConsole);
+                    //StatusString = toprintDebugConsole;
+                    var filename = System.IO.Path.GetFileName(item);
+                    string disclass = System.IO.Path.Combine(outputDirText, result.Prediction);
+                    //
+                    if (!System.IO.Directory.Exists(disclass))
+                    {
+                        System.IO.Directory.CreateDirectory(disclass);
+                    }
+                    var destfile = System.IO.Path.Combine(disclass, filename);
+                    System.IO.File.Copy(item, destfile, true);
+                    //precentage
+                    int percentComplete =
+                        (int)((float)imageClassificationCount / (float)filesToProcess.Length * 100);
+                    if (percentComplete > highestPercentageReached)
+                    {
+                        highestPercentageReached = percentComplete;
+                        worker.ReportProgress(percentComplete);
+                    }
+                }
+            }
+            return true;// all files have been classifed and sorted
+        }
         #endregion
 
     }
 }
+
+
+
+
+
+//private string _targetOutputDirectoryPath;
+//private int _imageClassificationCount = 0;
+//private ObservableCollection<CustomTwoClassificationImagePredictionResults> _predictedResults;
+//public ObservableCollection<CustomTwoClassificationImagePredictionResults> PredictionResults
+//{
+//    get { return _predictedResults; }
+//    set
+//    {
+//        _predictedResults = value;
+//        RaisePropertyChangedEvent("PredictionResults");
+//    }
+//}
+//var inventoryDir = System.IO.Path.Combine(outputDirText, "inventory");
+//Console.WriteLine(inventoryDir);
+//Console.WriteLine(inventoryDir);
+//var infrastructureDir = System.IO.Path.Combine(outputDirText, "infrastructure");
+//Console.WriteLine(infrastructureDir);
+//if (!System.IO.Directory.Exists(inventoryDir))
+//{
+//    System.IO.Directory.CreateDirectory(inventoryDir);
+//}
+//if (!System.IO.Directory.Exists(infrastructureDir))
+//{
+//    System.IO.Directory.CreateDirectory(infrastructureDir);
+//}
+
+//check to see if all there string items varilables exist. 
+//should probably check for inputdirecttext is validated
+// _filesToProcess 
+//I need property and feild for data binding of the text box for model location
+// _predictedResults = new ObservableCollection<CustomTwoClassificationImagePredictionResults>();
+// _targetOutputDirectoryPath = OutputDirText;
+//// Load model & 
+//create prediction engine
+
+//create output directories
+//Console.WriteLine(outputDirText);
+// Report progress as a percentage of the total task.
+//update ui with
+//var newPredictionToUpdateOutputStatus = new CustomTwoClassificationImagePredictionResults();
+//newPredictionToUpdateOutputStatus.PredictionId = _imageClassificationCount.ToString();
+//newPredictionToUpdateOutputStatus.ImageOriginalPath = item.ToString();
+//Console.WriteLine(item.ToString());
+//newPredictionToUpdateOutputStatus.ModelOutputscore = result.Score.FirstOrDefault().ToString();
+//newPredictionToUpdateOutputStatus.ModelOutputPrediction = result.Prediction;
+//from the backgroud thread in backgroudworker, I need to call the ui thread to update the listview
+//uiContext.Send(x => PredictionResults.Add(newPredictionToUpdateOutputStatus), null);
+//PredictionResults.Add(newPredictionToUpdateOutputStatus);
+//for me
+//System.Diagnostics.Debug.Write("PredictionResults Count: ");
+//System.Diagnostics.Debug.WriteLine(PredictionResults.Count.ToString());
