@@ -11,15 +11,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		TrainedModels\ATS_ADICModel_Class2.zip = TrainedModels\ATS_ADICModel_Class2.zip
 		TrainedModels\ATS_ADICModel_Class6.zip = TrainedModels\ATS_ADICModel_Class6.zip
+		CHANGELOG.md = CHANGELOG.md
 		devdocs.md = devdocs.md
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonImageProcessClassLibrary", "CommonImageProcessClassLibrary\CommonImageProcessClassLibrary.csproj", "{74B3846B-26BD-40A5-8026-88862B6FE478}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonImageProcessClassLibrary", "CommonImageProcessClassLibrary\CommonImageProcessClassLibrary.csproj", "{74B3846B-26BD-40A5-8026-88862B6FE478}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetFrameworkConsoleApp1", "..\EmguCvPrototypingWPF\NetFrameworkConsoleApp1\NetFrameworkConsoleApp1.csproj", "{1420C460-B4C2-4BC2-B9CB-BC78CB03F7E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DronePhotoImageizer.ConsoleApp", "DronePhotImageizer.ConsoleApp\DronePhotoImageizer.ConsoleApp.csproj", "{65889D45-77E5-4492-ADEF-AF7AA8207B7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DronePhotoImageizer.ConsoleApp", "DronePhotImageizer.ConsoleApp\DronePhotoImageizer.ConsoleApp.csproj", "{65889D45-77E5-4492-ADEF-AF7AA8207B7D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
