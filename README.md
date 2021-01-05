@@ -9,6 +9,8 @@ to walk you through the workflow in cleaning and preparing drone photos to integ
 to apply trained models for image classicaion, to stitch together photo for an areial map, and
  to detect objects from that image or others. These libraries will be listed in the technologies section.   
 
+## IIIF
+Looking into IIIF
 
 #### todo and release planning
 

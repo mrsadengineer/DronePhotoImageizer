@@ -19,7 +19,11 @@
 
 
 
-
+# Reminder Where to Update Version
+package in project properties  
+README.md file  
+MainWindow.xaml  
+GitHub Project Description
 
 
 
