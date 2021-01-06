@@ -12,6 +12,7 @@ to apply trained models for image classicaion, to stitch together photo for an a
 ## IIIF
 Looking into IIIF
 
+
 #### todo and release planning
 
 ##### version 0.3.0
