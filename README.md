@@ -10,7 +10,7 @@ to apply trained models for image classicaion, to stitch together photo for an a
  to detect objects from that image or others. These libraries will be listed in the technologies section.   
 
 ## IIIF
-Looking into IIIF
+Looking into IIIF.
 
 
 #### todo and release planning
