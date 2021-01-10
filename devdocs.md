@@ -12,6 +12,7 @@ referenced from nuget ml.net
 'Microsoft.ML.ImageAnalytics  
 Microsoft.ML.Vision  
 
+d
 ## note  
 add to use scisharp.tensorflow.redist 2.1.0 because I was getting an error with 2.4
 
